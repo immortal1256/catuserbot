@@ -18,7 +18,7 @@ DEFAULTUSERBIO = (
     if DEFAULT_BIO
     else "sıɥʇ ǝpoɔǝp uǝɥʇ llıʇu∩ ˙ ǝɔɐds ǝʇɐʌıɹd ǝɯos ǝɯ ǝʌı⅁˙"
 )
-USERNAME = str(Config.LIVE_USERNAME) if Config.LIVE_USERNAME else "@Jisan_cat_09"
+USERNAME = str(Config.LIVE_USERNAME) if Config.LIVE_USERNAME else "Jisan_cat_09"
 
 if Config.PRIVATE_GROUP_BOT_API_ID is None:
     BOTLOG = False
@@ -86,7 +86,7 @@ async def _(event):
         return
     name = f"{DEFAULTUSER}"
     bio = f"{DEFAULTUSERBIO}"
-    jisan = f"{USERNAME}"
+    jisan = USERNAME[1:]
     n = 1
     await borg(
         functions.photos.DeletePhotosRequest(
