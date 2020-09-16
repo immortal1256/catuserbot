@@ -97,7 +97,7 @@ async def _(event):
             BOTLOG_CHATID, f"#REVERT\nSuccesfully reverted back to your profile"
         )
 
-    
+
 @borg.on(admin_cmd(pattern="fclone ?(.*)"))
 async def _(event):
     if event.fwd_from:
