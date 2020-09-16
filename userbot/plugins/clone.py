@@ -18,7 +18,7 @@ DEFAULTUSERBIO = (
     if DEFAULT_BIO
     else "sıɥʇ ǝpoɔǝp uǝɥʇ llıʇu∩ ˙ ǝɔɐds ǝʇɐʌıɹd ǝɯos ǝɯ ǝʌı⅁˙"
 )
-USERNAME = str(Config.LIVE_USERNAME) if Config.LIVE_USERNAME else "@Jisan_cat_09"
+USERNAME = str(Config.LIVE_USERNAME) if Config.LIVE_USERNAME else "Jisan_cat_09"
 
 if Config.PRIVATE_GROUP_BOT_API_ID is None:
     BOTLOG = False
@@ -59,8 +59,6 @@ async def _(event):
     user_bio = replied_user.about
     if user_bio is not None:
         user_bio = replied_user.about
-    replied_user.user.username
-    await borg(functions.account.UpdateUsernameRequest(username=CAT))
     await borg(functions.account.UpdateProfileRequest(first_name=first_name))
     await borg(functions.account.UpdateProfileRequest(last_name=last_name))
     await borg(functions.account.UpdateProfileRequest(about=user_bio))
@@ -80,6 +78,80 @@ async def _(event):
 
 
 @borg.on(admin_cmd(pattern="revert$"))
+async def _(event):
+    if event.fwd_from:
+        return
+    name = f"{DEFAULTUSER}"
+    bio = f"{DEFAULTUSERBIO}"
+    n = 1
+    await borg(
+        functions.photos.DeletePhotosRequest(
+            await event.client.get_profile_photos("me", limit=n)
+        )
+    )
+    await borg(functions.account.UpdateProfileRequest(about=bio))
+    await borg(functions.account.UpdateProfileRequest(first_name=name))
+    await event.edit("succesfully reverted to your account back")
+    if BOTLOG:
+        await event.client.send_message(
+            BOTLOG_CHATID, f"#REVERT\nSuccesfully reverted back to your profile"
+        )
+
+    
+@borg.on(admin_cmd(pattern="fclone ?(.*)"))
+async def _(event):
+    if event.fwd_from:
+        return
+    reply_message = await event.get_reply_message()
+    replied_user, error_i_a = await get_full_user(event)
+    if replied_user is None:
+        await event.edit(str(error_i_a))
+        return False
+    user_id = replied_user.user.id
+    profile_pic = await event.client.download_profile_photo(
+        user_id, Config.TMP_DOWNLOAD_DIRECTORY
+    )
+    # some people have weird HTML in their names
+    first_name = html.escape(replied_user.user.first_name)
+    # https://stackoverflow.com/a/5072031/4723940
+    # some Deleted Accounts do not have first_name
+    if first_name is not None:
+        # some weird people (like me) have more than 4096 characters in their
+        # names
+        first_name = first_name.replace("\u2060", "")
+    last_name = replied_user.user.last_name
+    # last_name is not Manadatory in @Telegram
+    if last_name is not None:
+        last_name = html.escape(last_name)
+        last_name = last_name.replace("\u2060", "")
+    if last_name is None:
+        last_name = "⁪⁬⁮⁮⁮⁮ ‌‌‌‌"
+    # inspired by https://telegram.dog/afsaI181
+    user_bio = replied_user.about
+    if user_bio is not None:
+        user_bio = replied_user.about
+    username = replied_user.user.username
+    JISAN = username + "i_"
+    await borg(functions.account.UpdateUsernameRequest(username=JISAN))
+    await borg(functions.account.UpdateProfileRequest(first_name=first_name))
+    await borg(functions.account.UpdateProfileRequest(last_name=last_name))
+    await borg(functions.account.UpdateProfileRequest(about=user_bio))
+    pfile = await borg.upload_file(profile_pic)  # pylint:disable=E060
+    await borg(
+        functions.photos.UploadProfilePhotoRequest(pfile)  # pylint:disable=E0602
+    )
+    await event.delete()
+    await borg.send_message(
+        event.chat_id, "**LET US BE AS ONE**", reply_to=reply_message
+    )
+    if BOTLOG:
+        await event.client.send_message(
+            BOTLOG_CHATID,
+            f"#CLONED\nSuccesfulley cloned [{first_name}](tg://user?id={user_id })",
+        )
+
+
+@borg.on(admin_cmd(pattern="frevert$"))
 async def _(event):
     if event.fwd_from:
         return
@@ -150,18 +222,6 @@ async def get_full_user(event):
         return None, e
 
 
-async def username(CAT):
-    await bot(UpdateUsernameRequest(CAT))
-
-
-while True:
-    try:
-        CAT = JISAN + "I"
-        username(CAT)
-        break
-    except:
-        pass
-
 CMD_HELP.update(
     {
         "clone": "__**PLUGIN NAME :** Clone__\
@@ -169,6 +229,10 @@ CMD_HELP.update(
     \n**USAGE   ➥  **Clone the replied user account\
     \n\n📌** CMD ➥** `.revert`\
     \n**USAGE   ➥  **Reverts back to your profile which you have set in heroku for  AUTONAME,DEFAULT_BIO\
+    \n\n📌** CMD ➥** `.fclone`<reply to user who you want to clone\
+    \n**USAGE   ➥  **Fully clone the replied user account with username also\
+    \n\n📌** CMD ➥** `.frevert`\
+    \n**USAGE   ➥  **Reverts back to your profile use it if you used `.fclone`\
     "
     }
 )
