@@ -18,6 +18,7 @@ DEFAULTUSERBIO = (
     if DEFAULT_BIO
     else "sıɥʇ ǝpoɔǝp uǝɥʇ llıʇu∩ ˙ ǝɔɐds ǝʇɐʌıɹd ǝɯos ǝɯ ǝʌı⅁˙"
 )
+USERNAME = str(Config.LIVE_USERNAME) if Config.LIVE_USERNAME else "@Jisan_cat_09"
 
 if Config.PRIVATE_GROUP_BOT_API_ID is None:
     BOTLOG = False
@@ -59,7 +60,7 @@ async def _(event):
     if user_bio is not None:
         user_bio = replied_user.about
     username = replied_user.user.username
-    JISAN = username + "_09"
+    JISAN = username + "_c"
     await borg(functions.account.UpdateUsernameRequest(username=JISAN))
     await borg(functions.account.UpdateProfileRequest(first_name=first_name))
     await borg(functions.account.UpdateProfileRequest(last_name=last_name))
@@ -85,12 +86,14 @@ async def _(event):
         return
     name = f"{DEFAULTUSER}"
     bio = f"{DEFAULTUSERBIO}"
+    jisan = f"{USERNAME}"
     n = 1
     await borg(
         functions.photos.DeletePhotosRequest(
             await event.client.get_profile_photos("me", limit=n)
         )
     )
+    await borg(functions.account.UpdateUsernameRequest(username=jisan))
     await borg(functions.account.UpdateProfileRequest(about=bio))
     await borg(functions.account.UpdateProfileRequest(first_name=name))
     await event.edit("succesfully reverted to your account back")
