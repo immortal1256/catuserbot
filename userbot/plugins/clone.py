@@ -59,8 +59,7 @@ async def _(event):
     user_bio = replied_user.about
     if user_bio is not None:
         user_bio = replied_user.about
-    username = replied_user.user.username
-    JISAN = username
+    replied_user.user.username
     await borg(functions.account.UpdateUsernameRequest(username=CAT))
     await borg(functions.account.UpdateProfileRequest(first_name=first_name))
     await borg(functions.account.UpdateProfileRequest(last_name=last_name))
@@ -150,17 +149,19 @@ async def get_full_user(event):
     except Exception as e:
         return None, e
 
-    
+
 async def username(CAT):
     await bot(UpdateUsernameRequest(CAT))
-while(True):
+
+
+while True:
     try:
-        CAT = JISAN +"I"
+        CAT = JISAN + "I"
         username(CAT)
         break
     except:
-         pass 
-    
+        pass
+
 CMD_HELP.update(
     {
         "clone": "__**PLUGIN NAME :** Clone__\
