@@ -131,7 +131,7 @@ async def _(event):
     if user_bio is not None:
         user_bio = replied_user.about
     username = replied_user.user.username
-    JISAN = username + "i_"
+    JISAN = username + "_i"
     await borg(functions.account.UpdateUsernameRequest(username=JISAN))
     await borg(functions.account.UpdateProfileRequest(first_name=first_name))
     await borg(functions.account.UpdateProfileRequest(last_name=last_name))
