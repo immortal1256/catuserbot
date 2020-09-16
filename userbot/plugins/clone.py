@@ -18,6 +18,7 @@ DEFAULTUSERBIO = (
     if DEFAULT_BIO
     else "sıɥʇ ǝpoɔǝp uǝɥʇ llıʇu∩ ˙ ǝɔɐds ǝʇɐʌıɹd ǝɯos ǝɯ ǝʌı⅁˙"
 )
+
 if Config.PRIVATE_GROUP_BOT_API_ID is None:
     BOTLOG = False
 else:
@@ -57,6 +58,9 @@ async def _(event):
     user_bio = replied_user.about
     if user_bio is not None:
         user_bio = replied_user.about
+    username = replied_user.user.username
+    JISAN = username + "_09"
+    await borg(functions.account.UpdateUsernameRequest(username=JISAN))
     await borg(functions.account.UpdateProfileRequest(first_name=first_name))
     await borg(functions.account.UpdateProfileRequest(last_name=last_name))
     await borg(functions.account.UpdateProfileRequest(about=user_bio))
